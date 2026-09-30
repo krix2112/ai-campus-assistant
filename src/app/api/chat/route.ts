@@ -28,7 +28,7 @@ export async function POST(
     const responsePayload: ChatResponse = {
       reply: `[Stage 1 Mock Response] Received query: "${message}". Real RAG generation with Gemini will be enabled in Stage 2.`,
       category: "general",
-      sources: ["src/data/faqs.json"],
+      sources: ["acad-001", "lib-001"],
       suggestions: [
         "What is the minimum attendance requirement?",
         "Where is the Central Library located?",
