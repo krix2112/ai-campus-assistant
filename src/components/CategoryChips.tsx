@@ -11,6 +11,7 @@ import {
   Calendar,
   Clock,
   Building2,
+  Code2,
   Layers,
   LucideIcon,
 } from "lucide-react";
@@ -28,6 +29,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Calendar,
   Clock,
   Building2,
+  Code2,
 };
 
 const categories: Category[] = categoriesData as Category[];

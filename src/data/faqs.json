@@ -142,5 +142,69 @@
     "answer": "A nationalized bank branch and 2 ATMs (SBI and HDFC) are located near the Main Security Gate next to the University Post Office.",
     "keywords": ["atm machine", "bank branch", "main gate", "post office", "banking services"],
     "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "coding-001",
+    "category": "coding-careers",
+    "question": "Which coding clubs and developer communities can students join?",
+    "answer": "Students can join technical student chapters by taking these steps: 1) Explore the 'Clubs & Societies' category to view active tech societies on campus. 2) Attend the annual Club Orientation & Recruitment Drive held at the start of the semester. 3) Join the official campus developer Discord or WhatsApp groups for weekly problem-solving meetups. 4) Participate in beginner workshops, internal hack nights, and peer code reviews hosted by senior student leads.",
+    "keywords": ["coding clubs", "developer communities", "technical societies", "hack nights", "student chapters"],
+    "updatedAt": "2026-09-30T10:00:00Z"
+  },
+  {
+    "id": "coding-002",
+    "category": "coding-careers",
+    "question": "Where can I practice DSA and competitive programming?",
+    "answer": "Follow this structured step-by-step roadmap: 1) Start on GeeksforGeeks or LeetCode Explore cards to master foundational data structures (Arrays, Strings, Linked Lists, Trees). 2) Practice curated topic-wise problem lists (e.g., Striver's SDE Sheet, NeetCode 150) on LeetCode. 3) Participate in weekly beginner contests on CodeChef or LeetCode to build speed under time constraints. 4) Progress to Codeforces Div. 3/Div. 2 contests for advanced algorithmic problem-solving and competitive rating growth.",
+    "keywords": ["dsa practice", "competitive programming", "leetcode", "codeforces", "codechef", "geeksforgeeks"],
+    "updatedAt": "2026-09-30T10:00:00Z"
+  },
+  {
+    "id": "coding-003",
+    "category": "coding-careers",
+    "question": "How do I prepare for campus placements and coding rounds?",
+    "answer": "Prepare effectively for on-campus drives with this 4-step plan: 1) Master Core CS Fundamentals including Object-Oriented Programming (OOP), DBMS, Operating Systems, and Computer Networks. 2) Solve 150-250 medium-level DSA questions on LeetCode covering dynamic programming, graphs, and trees. 3) Build 2-3 production-grade full-stack or systems projects with live deployments and clear README documentation. 4) Practice timed mock coding tests, quantitative aptitude assessments, and peer mock interviews.",
+    "keywords": ["campus placements", "coding rounds", "interview preparation", "cs fundamentals", "mock interviews"],
+    "updatedAt": "2026-09-30T10:00:00Z"
+  },
+  {
+    "id": "coding-004",
+    "category": "coding-careers",
+    "question": "Where can I find hackathons and how do I form a team?",
+    "answer": "Get started with hackathons by following these steps: 1) Discover upcoming national and global hackathons on platforms like Devfolio, Devpost, MLH, and Unstop. 2) Check campus noticeboards and tech club channels for the annual University Hackathon. 3) Form a balanced multidisciplinary team of 3-4 members (frontend designer, backend engineer, and pitch presenter). 4) Prepare project boilerplates and GitHub templates in advance to accelerate prototyping during the event.",
+    "keywords": ["hackathons", "devfolio", "devpost", "team formation", "project prototyping"],
+    "updatedAt": "2026-09-30T10:00:00Z"
+  },
+  {
+    "id": "coding-005",
+    "category": "coding-careers",
+    "question": "How do I find internships and build a resume as a first or second year student?",
+    "answer": "Early-stage students can land internships with this focused approach: 1) Format a clean, single-page ATS-friendly resume highlighting technical skills, GitHub links, and GPA. 2) Build 2 distinct deployed personal projects solving real problems rather than generic tutorial clones. 3) Search for remote internships and student programs on Wellfound (AngelList), LinkedIn, Internshala, and Y Combinator Work at a Startup. 4) Reach out directly to alumni and engineering founders with concise cold emails demonstrating how your skills can contribute.",
+    "keywords": ["internships", "student resume", "ats format", "early career", "linkedin networking"],
+    "updatedAt": "2026-09-30T10:00:00Z"
+  },
+  {
+    "id": "coding-006",
+    "category": "coding-careers",
+    "question": "How do I start with open source?",
+    "answer": "Begin your open-source journey with these actionable milestones: 1) Master Git and GitHub fundamentals (forking, branching, committing, and opening Pull Requests). 2) Filter repositories using 'good first issue' and 'help wanted' labels on GitHub or GoodFirstIssue.dev. 3) Participate in beginner-friendly open-source initiatives like Hacktoberfest and GirlScript Summer of Code (GSSoC). 4) Contribute documentation fixes and unit tests before tackling major features in target Google Summer of Code (GSoC) organizations.",
+    "keywords": ["open source", "github basics", "good first issue", "gsoc", "hacktoberfest"],
+    "updatedAt": "2026-09-30T10:00:00Z"
+  },
+  {
+    "id": "coding-007",
+    "category": "coding-careers",
+    "question": "Which free resources should I use to learn web development and AI/ML?",
+    "answer": "Leverage these top free, industry-standard learning tracks: 1) For Web Development: Follow The Odin Project (full-stack JavaScript/Ruby) or freeCodeCamp for interactive coding practice. 2) For Computer Science Foundations: Take Harvard's CS50x on edX for core programming concepts and problem-solving. 3) For AI & Machine Learning: Complete the Practical Deep Learning course on fast.ai and Andrew Ng's Machine Learning specialization materials. 4) For Data Science & ML Practice: Work through Kaggle micro-courses and compete in beginner Kaggle tabular competitions.",
+    "keywords": ["free learning resources", "web development", "ai ml courses", "freecodecamp", "cs50", "kaggle"],
+    "updatedAt": "2026-09-30T10:00:00Z"
+  },
+  {
+    "id": "coding-008",
+    "category": "coding-careers",
+    "question": "Are the computer labs open after class hours for project work?",
+    "answer": "Students can access computer laboratories beyond standard lecture hours with these guidelines: 1) General computing labs in the Main Academic Block remain accessible on weekdays until [8:00 PM] with a valid student ID card. 2) Advanced research and project labs require written permission from the Department Lab In-Charge or Faculty Advisor. 3) High-performance compute servers and GPU workstations can be accessed remotely via university VPN. 4) Check the Central Computer Centre noticeboard for extended opening hours during hackathons and exam weeks.",
+    "keywords": ["computer labs", "lab timings", "project work", "academic block", "remote vpn"],
+    "updatedAt": "2026-09-30T10:00:00Z"
   }
 ]

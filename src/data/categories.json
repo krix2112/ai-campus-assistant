@@ -28,5 +28,10 @@
     "id": "campus-facilities",
     "label": "Campus Facilities",
     "icon": "Building2"
+  },
+  {
+    "id": "coding-careers",
+    "label": "Coding & Careers",
+    "icon": "Code2"
   }
 ]
