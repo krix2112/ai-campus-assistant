@@ -2,10 +2,10 @@ import { z } from "zod";
 
 const EnvSchema = z.object({
   GEMINI_API_KEY: z.string().min(1, "GEMINI_API_KEY is required for Gemini AI operations"),
-  GEMINI_MODEL: z.string().default("gemini-2.5-flash"),
+  GEMINI_MODEL: z.string().default("gemini-3.8-flash"),
   RATE_LIMIT_PER_MINUTE: z
     .string()
-    .default("30")
+    .default("60")
     .transform((val) => parseInt(val, 10))
     .pipe(z.number().positive()),
 });
@@ -30,8 +30,8 @@ export function getEnv(): Env {
     if (process.env.NODE_ENV === "test" || !process.env.GEMINI_API_KEY) {
       return {
         GEMINI_API_KEY: process.env.GEMINI_API_KEY || "mock-key-stage-1",
-        GEMINI_MODEL: process.env.GEMINI_MODEL || "gemini-2.5-flash",
-        RATE_LIMIT_PER_MINUTE: 30,
+        GEMINI_MODEL: process.env.GEMINI_MODEL || "gemini-3.8-flash",
+        RATE_LIMIT_PER_MINUTE: 60,
       };
     }
 

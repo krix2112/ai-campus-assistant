@@ -11,15 +11,17 @@ let aiClientInstance: GoogleGenAI | null = null;
  */
 export function getGeminiClient(): GoogleGenAI | null {
   const env = getEnv();
+  const apiKey = process.env.GEMINI_API_KEY || env.GEMINI_API_KEY;
   if (
-    !env.GEMINI_API_KEY ||
-    env.GEMINI_API_KEY === "development-dummy-key" ||
-    env.GEMINI_API_KEY === "your_gemini_api_key_here"
+    !apiKey ||
+    apiKey === "development-dummy-key" ||
+    apiKey === "your_gemini_api_key_here" ||
+    apiKey === "mock-key-stage-1"
   ) {
     return null;
   }
   if (!aiClientInstance) {
-    aiClientInstance = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
+    aiClientInstance = new GoogleGenAI({ apiKey });
   }
   return aiClientInstance;
 }
@@ -47,7 +49,7 @@ async function callGeminiWithTimeout(
   model: string,
   contents: Array<{ role: string; parts: Array<{ text: string }> }>,
   systemInstruction: string,
-  timeoutMs = 8000
+  timeoutMs = 15000
 ) {
   const callPromise = client.models.generateContent({
     model,
@@ -117,7 +119,7 @@ export async function generateGroundedAnswer(
     parts: [{ text: query }],
   });
 
-  const modelName = env.GEMINI_MODEL || "gemini-2.5-flash";
+  const modelName = env.GEMINI_MODEL || "gemini-3.8-flash";
 
   // Attempt generation with 1 retry on failure
   let lastError: unknown = null;
@@ -128,7 +130,7 @@ export async function generateGroundedAnswer(
         modelName,
         formattedContents,
         systemInstruction,
-        8000
+        15000
       );
 
       const generatedText = response.text?.trim();
@@ -141,6 +143,9 @@ export async function generateGroundedAnswer(
       }
     } catch (err) {
       lastError = err;
+      if (process.env.NODE_ENV !== "production") {
+        console.error(`[Gemini Attempt ${attempt} Failed]:`, err instanceof Error ? err.message : err);
+      }
       // Wait 300ms before retry if first attempt failed
       if (attempt === 1) {
         await new Promise((resolve) => setTimeout(resolve, 300));
