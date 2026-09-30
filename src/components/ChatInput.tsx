@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import { Send, Mic, MicOff, AlertCircle } from "lucide-react";
+import { ArrowUp, Mic, MicOff, AlertCircle } from "lucide-react";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 
 interface ChatInputProps {
@@ -33,7 +33,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     onChange(transcript.slice(0, MAX_CHARS));
   });
 
-  // Focus textarea on load
   useEffect(() => {
     if (!isLoading && textareaRef.current) {
       textareaRef.current.focus();
@@ -55,37 +54,57 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const isSendDisabled = !input.trim() || isLoading || isOverLimit || rateLimitSeconds > 0;
 
   return (
-    <div className="w-full bg-white/95 backdrop-blur-sm border-t border-slate-200/90 py-3 px-4 sm:px-6 sticky bottom-0 z-20">
-      <div className="max-w-3xl mx-auto flex flex-col gap-1.5">
-        {/* Rate limit warning banner */}
+    <div className="w-full bg-surface/95 border-t-[1.5px] border-ink p-3 sm:p-4 rounded-b-card">
+      <div className="flex flex-col gap-2">
+        {/* Rate Limit Warning */}
         {rateLimitSeconds > 0 && (
-          <div className="flex items-center gap-1.5 text-xs text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg">
-            <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" aria-hidden="true" />
+          <div className="flex items-center gap-2 text-xs font-mono font-semibold text-ink bg-accent/20 border-[1.5px] border-ink px-3 py-1.5 rounded-lg">
+            <AlertCircle className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
             <span>
-              Rate limit active. Please wait <strong>{rateLimitSeconds}s</strong> before sending another message.
+              RATE LIMIT ACTIVE: WAIT <strong>{rateLimitSeconds}S</strong> BEFORE NEXT QUERY.
             </span>
           </div>
         )}
 
-        {/* Speech permission or error notification */}
+        {/* Speech Permission Error Notification */}
         {speechError && (
-          <div className="flex items-center justify-between gap-2 text-xs text-red-800 bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg">
+          <div className="flex items-center justify-between gap-2 text-xs font-mono text-ink bg-accent/15 border-[1.5px] border-ink px-3 py-1.5 rounded-lg">
             <div className="flex items-center gap-1.5">
-              <AlertCircle className="w-3.5 h-3.5 text-red-600 flex-shrink-0" aria-hidden="true" />
+              <AlertCircle className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
               <span>{speechError}</span>
             </div>
             <button
               type="button"
               onClick={clearSpeechError}
-              className="text-red-700 hover:text-red-900 font-semibold underline text-[11px]"
+              className="text-accent hover:text-ink font-bold uppercase underline text-[11px]"
             >
-              Dismiss
+              DISMISS
             </button>
           </div>
         )}
 
-        {/* Input box container */}
-        <div className="relative flex items-end gap-2 bg-slate-50 border border-slate-300/80 rounded-2xl p-2 shadow-2xs focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
+        {/* Live Audio Waveform Indicator when Recording */}
+        {isListening && (
+          <div className="flex items-center justify-between px-3 py-1.5 bg-accent/15 border-[1.5px] border-ink rounded-lg">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-accent animate-ping" />
+              <span className="text-xs font-mono font-bold uppercase text-ink">
+                LISTENING (EN-IN)... SPEAK YOUR QUESTION
+              </span>
+            </div>
+            {/* 5 Waveform bars */}
+            <div className="flex items-center gap-1 h-5" aria-hidden="true">
+              <span className="w-1 bg-ink rounded-full wave-bar-1" />
+              <span className="w-1 bg-accent rounded-full wave-bar-2" />
+              <span className="w-1 bg-ink rounded-full wave-bar-3" />
+              <span className="w-1 bg-accent rounded-full wave-bar-4" />
+              <span className="w-1 bg-ink rounded-full wave-bar-5" />
+            </div>
+          </div>
+        )}
+
+        {/* Input Box Container */}
+        <div className="relative flex items-end gap-2 bg-paper border-[1.5px] border-ink rounded-[12px] p-2 shadow-hard-sm focus-within:shadow-hard focus-within:-translate-y-0.5 transition-all">
           <textarea
             ref={textareaRef}
             rows={1}
@@ -94,37 +113,38 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             maxLength={MAX_CHARS}
             placeholder={
               isListening
-                ? "Listening... Speak your campus question now"
-                : "Ask about courses, library timings, clubs, hostel rules..."
+                ? "Listening..."
+                : "Ask about hostel curfew, library timings, clubs, mess..."
             }
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 max-h-32 min-h-[40px] py-2 px-2 bg-transparent text-sm text-slate-900 placeholder:text-slate-400 resize-none focus:outline-none leading-relaxed"
+            className="flex-1 max-h-32 min-h-[38px] py-1.5 px-2 bg-transparent text-sm text-ink placeholder:text-ink/40 resize-none focus:outline-none leading-relaxed font-body"
             aria-label="Ask a campus question"
           />
 
-          <div className="flex items-center gap-1 flex-shrink-0 mb-0.5">
-            {/* Voice Input Button */}
+          <div className="flex items-center gap-1.5 flex-shrink-0 mb-0.5">
+            {/* Voice Input Button with Concentric Pulse Effect */}
             {isSpeechSupported && (
               <button
                 type="button"
                 onClick={toggleListening}
                 disabled={isLoading || rateLimitSeconds > 0}
-                aria-label={isListening ? "Stop voice listening" : "Start voice input"}
-                title={isListening ? "Stop listening" : "Voice input (Web Speech)"}
-                className={`relative p-2 rounded-xl text-slate-500 hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
+                aria-label={isListening ? "Stop voice recording" : "Start voice input"}
+                title={isListening ? "Stop listening" : "Voice input"}
+                className={`relative p-2 rounded-full border-[1.5px] border-ink transition-all ${
                   isListening
-                    ? "bg-red-100 text-red-600 animate-pulse"
-                    : "hover:bg-slate-200/70"
+                    ? "bg-accent text-ink shadow-hard-sm"
+                    : "bg-surface text-ink hover:bg-surface-muted"
                 }`}
               >
                 {isListening ? (
                   <>
-                    <MicOff className="w-4 h-4 text-red-600" aria-hidden="true" />
-                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
+                    <MicOff className="w-4 h-4 text-ink" aria-hidden="true" />
+                    {/* Concentric pulse rings */}
+                    <span className="absolute -inset-1 rounded-full border-[1.5px] border-accent animate-ping pointer-events-none" />
                   </>
                 ) : (
-                  <Mic className="w-4 h-4" aria-hidden="true" />
+                  <Mic className="w-4 h-4 text-ink" aria-hidden="true" />
                 )}
               </button>
             )}
@@ -136,25 +156,25 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               disabled={isSendDisabled}
               aria-label="Send message"
               title="Send message"
-              className={`p-2 rounded-xl transition-all duration-150 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
+              className={`p-2 rounded-full border-[1.5px] border-ink transition-all flex items-center justify-center ${
                 isSendDisabled
-                  ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                  : "bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 shadow-sm"
+                  ? "bg-surface-muted text-ink/30 cursor-not-allowed border-ink/40"
+                  : "bg-accent text-ink hover:bg-accent-hover active:translate-x-0.5 active:translate-y-0.5 shadow-hard-sm"
               }`}
             >
-              <Send className="w-4 h-4" aria-hidden="true" />
+              <ArrowUp className="w-4 h-4 text-ink stroke-[2.5]" aria-hidden="true" />
             </button>
           </div>
         </div>
 
-        {/* Footer info: Character counter & hint */}
-        <div className="flex items-center justify-between px-2 text-[11px] text-slate-500">
+        {/* Helper footer text and character counter */}
+        <div className="flex items-center justify-between px-1 text-[11px] font-mono text-ink/60">
           <span className="hidden sm:inline">
-            Press <kbd className="px-1 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px]">Enter</kbd> to send, <kbd className="px-1 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px]">Shift+Enter</kbd> for newline
+            ENTER TO SEND • SHIFT+ENTER FOR NEWLINE
           </span>
           <span
             className={`ml-auto font-mono ${
-              isNearLimit ? (isOverLimit ? "text-red-600 font-bold" : "text-amber-600 font-medium") : "text-slate-500"
+              isNearLimit ? (isOverLimit ? "text-accent font-bold" : "text-accent") : "text-ink/60"
             }`}
           >
             {charCount}/{MAX_CHARS}
