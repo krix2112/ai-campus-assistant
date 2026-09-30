@@ -1,40 +1,42 @@
-import { NextRequest, NextResponse } from "next/server";
-import { FAQ, ApiError } from "@/types";
-import faqsData from "@/data/faqs.json";
-import { FaqQuerySchema } from "@/lib/validation/schemas";
-import { apiError, apiSuccess } from "@/lib/utils";
+import { NextRequest } from "next/server";
+import { successResponse } from "@/lib/utils";
+import rawFaqs from "@/data/faqs.json";
+import rawCategories from "@/data/categories.json";
+import { FAQ, Category } from "@/types";
 
-export async function GET(
-  request: NextRequest
-): Promise<NextResponse<{ suggestions: string[] } | ApiError>> {
-  try {
-    const { searchParams } = new URL(request.url);
-    const categoryParam = searchParams.get("category") || undefined;
+const faqs: FAQ[] = rawFaqs as FAQ[];
+const categories: Category[] = rawCategories as Category[];
 
-    const parsed = FaqQuerySchema.safeParse({ category: categoryParam });
-    if (!parsed.success) {
-      return apiError("INVALID_QUERY", "Invalid query parameter", 400);
-    }
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const categoryParam = searchParams.get("category")?.trim().toLowerCase();
 
-    const allFaqs = faqsData as FAQ[];
-    let filteredFaqs = allFaqs;
-
-    if (parsed.data.category) {
-      filteredFaqs = allFaqs.filter(
-        (faq) => faq.category.toLowerCase() === parsed.data.category?.toLowerCase()
-      );
-    }
-
-    const suggestions = filteredFaqs
-      .slice(0, 6)
-      .map((faq) => faq.question);
-
-    return apiSuccess({ suggestions });
-  } catch (error) {
-    return apiError(
-      "INTERNAL_ERROR",
-      error instanceof Error ? error.message : "Failed to retrieve suggestions",
-      500
+  if (categoryParam && categoryParam !== "all") {
+    // Return up to 4 questions from this specific category
+    const categoryFaqs = faqs.filter(
+      (f) => f.category.toLowerCase() === categoryParam
     );
+
+    const questions = categoryFaqs.slice(0, 4).map((f) => f.question);
+    return successResponse({ suggestions: questions });
   }
+
+  // Mixed 6 questions (1 from each category where possible)
+  const mixedQuestions: string[] = [];
+  for (const cat of categories) {
+    const matchedFaq = faqs.find((f) => f.category === cat.id);
+    if (matchedFaq) {
+      mixedQuestions.push(matchedFaq.question);
+    }
+  }
+
+  // Fallback to first 6 if fewer categories
+  if (mixedQuestions.length < 6) {
+    const remaining = faqs
+      .filter((f) => !mixedQuestions.includes(f.question))
+      .map((f) => f.question);
+    mixedQuestions.push(...remaining.slice(0, 6 - mixedQuestions.length));
+  }
+
+  return successResponse({ suggestions: mixedQuestions.slice(0, 6) });
 }

@@ -1,12 +1,99 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ChatResponse, ApiError } from "@/types";
+import { ChatResponse, ApiError, FAQ } from "@/types";
 import { ChatRequestSchema } from "@/lib/validation/schemas";
 import { apiError, apiSuccess } from "@/lib/utils";
+import { searchFaqs } from "@/lib/retrieval/matcher";
+import { generateGroundedAnswer } from "@/lib/ai/client";
+import { getEnv } from "@/lib/config/env";
+import faqsData from "@/data/faqs.json";
+
+// In-memory sliding rate limiter per IP
+interface RateLimitEntry {
+  count: number;
+  resetTime: number;
+}
+
+const rateLimitMap = new Map<string, RateLimitEntry>();
+
+function checkRateLimit(ip: string, limitPerMinute: number): { allowed: boolean; retryAfter: number } {
+  const now = Date.now();
+  const windowMs = 60 * 1000;
+  const entry = rateLimitMap.get(ip);
+
+  // Cleanup stale entries
+  if (rateLimitMap.size > 5000) {
+    for (const [key, val] of rateLimitMap.entries()) {
+      if (now > val.resetTime) {
+        rateLimitMap.delete(key);
+      }
+    }
+  }
+
+  if (!entry || now > entry.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+    return { allowed: true, retryAfter: 0 };
+  }
+
+  if (entry.count >= limitPerMinute) {
+    const retryAfter = Math.max(1, Math.ceil((entry.resetTime - now) / 1000));
+    return { allowed: false, retryAfter };
+  }
+
+  entry.count += 1;
+  return { allowed: true, retryAfter: 0 };
+}
+
+function getClientIp(request: NextRequest): string {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0].trim();
+  }
+  return request.headers.get("x-real-ip") || "127.0.0.1";
+}
+
+function getRelatedSuggestions(matchedFaqs: FAQ[], allFaqs: FAQ[], requestedCategory?: string): string[] {
+  const matchedIds = new Set(matchedFaqs.map((f) => f.id));
+  const primaryCategory = matchedFaqs[0]?.category || requestedCategory;
+
+  const sameCategoryQuestions: string[] = [];
+  if (primaryCategory) {
+    sameCategoryQuestions.push(
+      ...allFaqs
+        .filter((f) => f.category.toLowerCase() === primaryCategory.toLowerCase() && !matchedIds.has(f.id))
+        .map((f) => f.question)
+    );
+  }
+
+  const otherQuestions = allFaqs
+    .filter((f) => !matchedIds.has(f.id) && !sameCategoryQuestions.includes(f.question))
+    .map((f) => f.question);
+
+  return [...sameCategoryQuestions, ...otherQuestions].slice(0, 4);
+}
 
 export async function POST(
   request: NextRequest
 ): Promise<NextResponse<ChatResponse | ApiError>> {
   try {
+    const env = getEnv();
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit(clientIp, env.RATE_LIMIT_PER_MINUTE || 60);
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          code: "RATE_LIMIT_EXCEEDED",
+          message: `Too many requests. Please wait ${rateLimit.retryAfter} seconds.`,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimit.retryAfter),
+          },
+        }
+      );
+    }
+
     const body = await request.json().catch(() => null);
 
     if (!body) {
@@ -15,25 +102,36 @@ export async function POST(
 
     const validation = ChatRequestSchema.safeParse(body);
     if (!validation.success) {
-      return apiError(
-        "VALIDATION_ERROR",
-        validation.error.errors[0]?.message || "Invalid chat request format",
-        400
-      );
+      const errorMessage = validation.error.errors[0]?.message || "Invalid chat request format";
+      return apiError("VALIDATION_ERROR", errorMessage, 400);
     }
 
-    const { message } = validation.data;
+    const { message, history, category } = validation.data;
+    const allFaqs = faqsData as FAQ[];
 
-    // Stage 1 typed mock response stub
+    // 1. Retrieve top matching FAQs with optional category boost
+    const matchedFaqs = searchFaqs(message, {
+      category: category && category !== "all" ? category : undefined,
+      limit: 3,
+      minScore: 15,
+    });
+
+    // 2. Generate grounded answer
+    const result = await generateGroundedAnswer({
+      query: message,
+      contextFaqs: matchedFaqs,
+      history,
+    });
+
+    // 3. Build related suggestions (same category first, then others)
+    const suggestions = getRelatedSuggestions(matchedFaqs, allFaqs, category);
+
     const responsePayload: ChatResponse = {
-      reply: `[Stage 1 Mock Response] Received query: "${message}". Real RAG generation with Gemini will be enabled in Stage 2.`,
-      category: "general",
-      sources: ["acad-001", "lib-001"],
-      suggestions: [
-        "What is the minimum attendance requirement?",
-        "Where is the Central Library located?",
-        "What are the hostel in-out timings?",
-      ],
+      reply: result.reply,
+      category: matchedFaqs[0]?.category || category,
+      sources: result.sources,
+      suggestions,
+      degraded: result.degraded,
     };
 
     return apiSuccess<ChatResponse>(responsePayload, 200);

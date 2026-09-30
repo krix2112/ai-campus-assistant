@@ -27,7 +27,8 @@ export const ChatMessageSchema = z.object({
 });
 
 export const ChatRequestSchema = z.object({
-  message: z.string().trim().min(1, "Message cannot be empty").max(1000, "Message is too long"),
+  message: z.string().trim().min(1, "Message cannot be empty").max(500, "Message cannot exceed 500 characters"),
+  category: z.string().trim().optional(),
   history: z.array(ChatMessageSchema).optional(),
 });
 
@@ -36,6 +37,7 @@ export const ChatResponseSchema = z.object({
   category: z.string().optional(),
   sources: z.array(z.string()),
   suggestions: z.array(z.string()),
+  degraded: z.boolean().optional(),
 });
 
 export const ApiErrorSchema = z.object({

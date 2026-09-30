@@ -23,6 +23,7 @@ export interface ChatMessage {
 
 export interface ChatRequest {
   message: string;
+  category?: string;
   history?: ChatMessage[];
 }
 
@@ -31,6 +32,7 @@ export interface ChatResponse {
   category?: string;
   sources: string[];
   suggestions: string[];
+  degraded?: boolean;
 }
 
 export interface ApiError {
