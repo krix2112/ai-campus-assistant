@@ -29,6 +29,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     errorMessage: speechError,
     clearError: clearSpeechError,
     toggleListening,
+    stopListening,
   } = useSpeechRecognition((transcript) => {
     onChange(transcript.slice(0, MAX_CHARS));
   });
@@ -39,13 +40,26 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   }, [isLoading]);
 
+  const handleSend = () => {
+    if (input.trim() && !isLoading && rateLimitSeconds === 0) {
+      stopListening();
+      onSend();
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (input.trim() && !isLoading && rateLimitSeconds === 0) {
-        onSend();
-      }
+      handleSend();
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    if (!val.trim() && isListening) {
+      stopListening();
+    }
+    onChange(val);
   };
 
   const charCount = input.length;
@@ -116,7 +130,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 ? "Listening..."
                 : "Ask about hostel curfew, library timings, clubs, mess..."
             }
-            onChange={(e) => onChange(e.target.value)}
+            onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             className="flex-1 max-h-32 min-h-[38px] py-1.5 px-2 bg-transparent text-sm text-ink placeholder:text-ink/40 resize-none focus:outline-none leading-relaxed font-body"
             aria-label="Ask a campus question"
@@ -152,7 +166,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             {/* Send Button */}
             <button
               type="button"
-              onClick={onSend}
+              onClick={handleSend}
               disabled={isSendDisabled}
               aria-label="Send message"
               title="Send message"
