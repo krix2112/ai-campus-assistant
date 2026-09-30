@@ -1,0 +1,146 @@
+[
+  {
+    "id": "acad-001",
+    "category": "academics",
+    "question": "What is the minimum attendance requirement to appear for semester end exams?",
+    "answer": "Students must maintain a minimum of 75% attendance in each registered course. A relaxation up to 65% may be granted by the Dean of Academic Affairs strictly on certified medical grounds.",
+    "keywords": ["attendance", "minimum criteria", "semester exams", "medical condonation", "dean academics"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "acad-002",
+    "category": "academics",
+    "question": "Where can I view my internal assessment marks and CGPA?",
+    "answer": "Internal assessment marks, mid-term grades, and semester CGPA transcripts can be viewed on the University Student ERP Portal under the 'Academic Records' tab.",
+    "keywords": ["cgpa", "internal marks", "student erp portal", "transcripts", "grade report"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "acad-003",
+    "category": "academics",
+    "question": "How do I apply for course re-evaluation or back paper registration?",
+    "answer": "Re-evaluation applications open within 10 days of result declarations via the Examination Cell window in Block A, Ground Floor, or online through the Examination Portal.",
+    "keywords": ["re-evaluation", "back paper", "exam cell", "supplementary exam", "block a"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "club-001",
+    "category": "clubs-societies",
+    "question": "How can first-year students join technical and cultural clubs?",
+    "answer": "Clubs conduct their annual recruitment drive during 'Orientation Week' in August/September. Interested students can register at stalls in the Student Activity Centre (SAC) or fill out online Google forms shared on official social handles.",
+    "keywords": ["club orientation", "sac centre", "cultural club", "technical society", "auditions"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "club-002",
+    "category": "clubs-societies",
+    "question": "What are the major active societies on campus?",
+    "answer": "The campus hosts several active bodies including the Coding Club, Robotics Society, Literary & Debating Society, Dramatics Club (Natya), Music Society (Dhwani), and the Photography Club.",
+    "keywords": ["student societies", "coding club", "robotics", "music society", "drama club"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "club-003",
+    "category": "clubs-societies",
+    "question": "How do I start a new student club or chapter?",
+    "answer": "To start a new club, you need a minimum of 15 founding student members and a faculty advisor. Submit a formal charter proposal to the Office of the Dean of Student Affairs in Block C.",
+    "keywords": ["start club", "faculty advisor", "student affairs", "charter proposal", "block c"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "lib-001",
+    "category": "library",
+    "question": "Where is the Central Library located and what are its borrowing limits?",
+    "answer": "The Central Library is located in Block B. Undergraduate students can borrow up to 4 books for a duration of 14 days using their Student ID card.",
+    "keywords": ["central library", "block b", "book borrowing", "id card", "library limit"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "lib-002",
+    "category": "library",
+    "question": "What are the library overdue fines and renewal policies?",
+    "answer": "Overdue fines are charged at ₹5 per day per book. Books can be renewed online once through the Library OPAC portal provided no other student has placed a hold.",
+    "keywords": ["library fine", "opac portal", "book renewal", "overdue fee", "central library"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "lib-003",
+    "category": "library",
+    "question": "How do I access IEEE, Springer, and digital journals from off-campus?",
+    "answer": "Remote access to digital libraries (IEEE Xplore, ScienceDirect, Springer) is enabled via the University RemoteXs VPN credentials provided during college onboarding.",
+    "keywords": ["ieee xplore", "digital library", "vpn access", "remotexs", "springer journals"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "evnt-001",
+    "category": "events",
+    "question": "When is the annual cultural fest held and how can I get a pass?",
+    "answer": "The annual cultural fest 'Utsav' is held in February. Entry passes are issued via digital QR on the college events app using your student roll number.",
+    "keywords": ["cultural fest", "utsav", "annual festival", "event pass", "student entry"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "evnt-002",
+    "category": "events",
+    "question": "What is the annual technical hackathon and who can participate?",
+    "answer": "'InnovateX', the 36-hour inter-college hackathon, takes place every October in the Central Computer Lab. Teams of 2 to 4 undergraduate students can register online.",
+    "keywords": ["hackathon", "innovatex", "coding contest", "computer lab", "tech fest"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "evnt-003",
+    "category": "events",
+    "question": "Where are campus event updates and guest lecture schedules published?",
+    "answer": "All upcoming seminars, workshops, and guest lectures are announced on the Digital Notice Board screens in Block A and on the official University Telegram announcement channel.",
+    "keywords": ["guest lectures", "notice board", "seminar updates", "workshops", "announcements"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "time-001",
+    "category": "timings",
+    "question": "What are the general university academic hours and office timings?",
+    "answer": "Regular lectures and laboratory sessions run from 9:00 AM to 5:00 PM, Monday through Friday. Administrative offices operate from 9:30 AM to 4:30 PM.",
+    "keywords": ["academic hours", "lecture timings", "admin office", "class schedule", "campus timings"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "time-002",
+    "category": "timings",
+    "question": "What are the Central Library and reading room hours?",
+    "answer": "The Central Library is open from 8:00 AM to 8:00 PM on weekdays. The 24/7 air-conditioned Reading Hall in Block B remains accessible all night during semester examination weeks.",
+    "keywords": ["library hours", "reading hall", "exam week", "late night study", "block b"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "time-003",
+    "category": "timings",
+    "question": "What are the hostel in-out timings and gate curfew rules?",
+    "answer": "Hostel gates close at 9:30 PM for all undergraduate resident students. Late entry up to 10:30 PM requires prior digital leave permission from the Hostel Warden.",
+    "keywords": ["hostel timing", "curfew", "warden permission", "gate entry", "in-out hours"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "fac-001",
+    "category": "campus-facilities",
+    "question": "Where is the campus health centre / dispensary located?",
+    "answer": "The University Health Centre is located near Hostel Block 3. A medical officer and 24/7 emergency ambulance service are available on campus for all enrolled students.",
+    "keywords": ["health centre", "dispensary", "medical emergency", "ambulance", "hostel block 3"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "fac-002",
+    "category": "campus-facilities",
+    "question": "What sports facilities and gymnasiums are available on campus?",
+    "answer": "The Sports Complex features a synthetic running track, basketball and tennis courts, indoor badminton courts, and a gymnasium located opposite the Student Cafeteria.",
+    "keywords": ["sports complex", "gymnasium", "badminton court", "basketball", "fitness centre"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  },
+  {
+    "id": "fac-003",
+    "category": "campus-facilities",
+    "question": "Where are the ATMs and bank branches located on campus?",
+    "answer": "A nationalized bank branch and 2 ATMs (SBI and HDFC) are located near the Main Security Gate next to the University Post Office.",
+    "keywords": ["atm machine", "bank branch", "main gate", "post office", "banking services"],
+    "updatedAt": "2026-09-01T10:00:00Z"
+  }
+]

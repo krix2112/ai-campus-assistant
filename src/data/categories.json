@@ -1,0 +1,32 @@
+[
+  {
+    "id": "academics",
+    "label": "Academics",
+    "icon": "GraduationCap"
+  },
+  {
+    "id": "clubs-societies",
+    "label": "Clubs & Societies",
+    "icon": "Users"
+  },
+  {
+    "id": "library",
+    "label": "Library",
+    "icon": "BookOpen"
+  },
+  {
+    "id": "events",
+    "label": "Events",
+    "icon": "Calendar"
+  },
+  {
+    "id": "timings",
+    "label": "Timings",
+    "icon": "Clock"
+  },
+  {
+    "id": "campus-facilities",
+    "label": "Campus Facilities",
+    "icon": "Building2"
+  }
+]
