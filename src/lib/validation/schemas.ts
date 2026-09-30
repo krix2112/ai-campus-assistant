@@ -38,6 +38,7 @@ export const ChatResponseSchema = z.object({
   sources: z.array(z.string()),
   suggestions: z.array(z.string()),
   degraded: z.boolean().optional(),
+  ai: z.enum(["gemini", "fallback"]).optional(),
 });
 
 export const ApiErrorSchema = z.object({

@@ -3,6 +3,49 @@ import { getEnv } from "@/lib/config/env";
 import { FAQ, ChatMessage } from "@/types";
 import { buildSystemInstruction } from "./prompts";
 
+export type AiErrorKind = "auth" | "model_not_found" | "quota" | "timeout" | "other";
+
+export function classifyAiError(err: unknown): { errorKind: AiErrorKind; status: number } {
+  const errMsg = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
+
+  if (
+    errMsg.includes("401") ||
+    errMsg.includes("403") ||
+    errMsg.includes("auth") ||
+    errMsg.includes("unauthenticated") ||
+    errMsg.includes("api key") ||
+    errMsg.includes("permission")
+  ) {
+    return { errorKind: "auth", status: 401 };
+  }
+
+  if (
+    errMsg.includes("404") ||
+    errMsg.includes("not found") ||
+    errMsg.includes("no longer available") ||
+    errMsg.includes("not supported")
+  ) {
+    return { errorKind: "model_not_found", status: 404 };
+  }
+
+  if (
+    errMsg.includes("429") ||
+    errMsg.includes("503") ||
+    errMsg.includes("quota") ||
+    errMsg.includes("resource exhausted") ||
+    errMsg.includes("high demand") ||
+    errMsg.includes("unavailable")
+  ) {
+    return { errorKind: "quota", status: 429 };
+  }
+
+  if (errMsg.includes("time out") || errMsg.includes("timed out") || errMsg.includes("timeout")) {
+    return { errorKind: "timeout", status: 504 };
+  }
+
+  return { errorKind: "other", status: 500 };
+}
+
 let aiClientInstance: GoogleGenAI | null = null;
 
 /**
@@ -36,6 +79,7 @@ export interface GroundedAnswerResult {
   reply: string;
   sources: string[];
   degraded?: boolean;
+  ai: "gemini" | "fallback";
 }
 
 const NO_MATCH_FALLBACK =
@@ -56,7 +100,7 @@ async function callGeminiWithTimeout(
     contents,
     config: {
       systemInstruction,
-      temperature: 0.2,
+      temperature: 0.3,
     },
   });
 
@@ -92,12 +136,14 @@ export async function generateGroundedAnswer(
         reply: contextFaqs[0].answer,
         sources: [contextFaqs[0].id],
         degraded: true,
+        ai: "fallback",
       };
     }
     return {
       reply: NO_MATCH_FALLBACK,
       sources: [],
       degraded: true,
+      ai: "fallback",
     };
   }
 
@@ -119,7 +165,7 @@ export async function generateGroundedAnswer(
     parts: [{ text: query }],
   });
 
-  const modelName = env.GEMINI_MODEL || "gemini-3.8-flash";
+  const modelName = env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 
   // Attempt generation with 1 retry on failure
   let lastError: unknown = null;
@@ -139,13 +185,15 @@ export async function generateGroundedAnswer(
           reply: generatedText,
           sources: contextFaqs.map((f) => f.id),
           degraded: false,
+          ai: "gemini",
         };
       }
     } catch (err) {
       lastError = err;
-      if (process.env.NODE_ENV !== "production") {
-        console.error(`[Gemini Attempt ${attempt} Failed]:`, err instanceof Error ? err.message : err);
-      }
+      const { errorKind, status } = classifyAiError(err);
+      // Log upstream failure server-side (status and errorKind only)
+      console.error(`[Gemini Attempt ${attempt} Failed]: status=${status}, errorKind=${errorKind}`);
+
       // Wait 300ms before retry if first attempt failed
       if (attempt === 1) {
         await new Promise((resolve) => setTimeout(resolve, 300));
@@ -160,6 +208,7 @@ export async function generateGroundedAnswer(
       reply: contextFaqs[0].answer,
       sources: [contextFaqs[0].id],
       degraded: true,
+      ai: "fallback",
     };
   }
 
@@ -167,5 +216,6 @@ export async function generateGroundedAnswer(
     reply: NO_MATCH_FALLBACK,
     sources: [],
     degraded: true,
+    ai: "fallback",
   };
 }

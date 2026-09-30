@@ -33,6 +33,7 @@ export interface ChatResponse {
   sources: string[];
   suggestions: string[];
   degraded?: boolean;
+  ai?: "gemini" | "fallback";
 }
 
 export interface ApiError {

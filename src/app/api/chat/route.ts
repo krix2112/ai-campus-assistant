@@ -15,7 +15,7 @@ interface RateLimitEntry {
 
 const rateLimitMap = new Map<string, RateLimitEntry>();
 
-function checkRateLimit(ip: string, limitPerMinute: number): { allowed: boolean; retryAfter: number } {
+function checkIpRateLimit(ip: string, limitPerMinute: number): { allowed: boolean; retryAfter: number } {
   const now = Date.now();
   const windowMs = 60 * 1000;
   const entry = rateLimitMap.get(ip);
@@ -40,6 +40,28 @@ function checkRateLimit(ip: string, limitPerMinute: number): { allowed: boolean;
   }
 
   entry.count += 1;
+  return { allowed: true, retryAfter: 0 };
+}
+
+// Global request cap per hour across all clients
+let globalRequestCount = 0;
+let globalResetTime = Date.now() + 60 * 60 * 1000;
+
+function checkGlobalRateLimit(limitPerHour: number): { allowed: boolean; retryAfter: number } {
+  const now = Date.now();
+  const windowMs = 60 * 60 * 1000;
+
+  if (now > globalResetTime) {
+    globalRequestCount = 0;
+    globalResetTime = now + windowMs;
+  }
+
+  if (globalRequestCount >= limitPerHour) {
+    const retryAfter = Math.max(1, Math.ceil((globalResetTime - now) / 1000));
+    return { allowed: false, retryAfter };
+  }
+
+  globalRequestCount += 1;
   return { allowed: true, retryAfter: 0 };
 }
 
@@ -76,19 +98,37 @@ export async function POST(
 ): Promise<NextResponse<ChatResponse | ApiError>> {
   try {
     const env = getEnv();
-    const clientIp = getClientIp(request);
-    const rateLimit = checkRateLimit(clientIp, env.RATE_LIMIT_PER_MINUTE || 60);
 
-    if (!rateLimit.allowed) {
+    // 1. Global hourly rate limit check
+    const globalLimit = checkGlobalRateLimit(env.GLOBAL_RATE_LIMIT_PER_HOUR || 300);
+    if (!globalLimit.allowed) {
       return NextResponse.json(
         {
           code: "RATE_LIMIT_EXCEEDED",
-          message: `Too many requests. Please wait ${rateLimit.retryAfter} seconds.`,
+          message: `Too many requests. Please wait ${globalLimit.retryAfter} seconds.`,
         },
         {
           status: 429,
           headers: {
-            "Retry-After": String(rateLimit.retryAfter),
+            "Retry-After": String(globalLimit.retryAfter),
+          },
+        }
+      );
+    }
+
+    // 2. Per-IP rate limit check
+    const clientIp = getClientIp(request);
+    const ipLimit = checkIpRateLimit(clientIp, env.RATE_LIMIT_PER_MINUTE || 60);
+    if (!ipLimit.allowed) {
+      return NextResponse.json(
+        {
+          code: "RATE_LIMIT_EXCEEDED",
+          message: `Too many requests. Please wait ${ipLimit.retryAfter} seconds.`,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(ipLimit.retryAfter),
           },
         }
       );
@@ -109,21 +149,21 @@ export async function POST(
     const { message, history, category } = validation.data;
     const allFaqs = faqsData as FAQ[];
 
-    // 1. Retrieve top matching FAQs with optional category boost
+    // 3. Retrieve top matching FAQs with optional category boost
     const matchedFaqs = searchFaqs(message, {
       category: category && category !== "all" ? category : undefined,
       limit: 3,
       minScore: 15,
     });
 
-    // 2. Generate grounded answer
+    // 4. Generate grounded answer
     const result = await generateGroundedAnswer({
       query: message,
       contextFaqs: matchedFaqs,
       history,
     });
 
-    // 3. Build related suggestions (same category first, then others)
+    // 5. Build related suggestions (same category first, then others)
     const suggestions = getRelatedSuggestions(matchedFaqs, allFaqs, category);
 
     const responsePayload: ChatResponse = {
@@ -132,6 +172,7 @@ export async function POST(
       sources: result.sources,
       suggestions,
       degraded: result.degraded,
+      ai: result.ai,
     };
 
     return apiSuccess<ChatResponse>(responsePayload, 200);
